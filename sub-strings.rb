@@ -2,7 +2,7 @@ dictionary = ["below","down","go","going","horn","how","howdy","it","i","low",
     "own","part","partner","sit"]
 def substrings(words, dictionary)
     hash = Hash.new
-    array = words.split(' ')
+    array = words.downcase.split(' ')
     dictionary.each do |dic_word|
         array.each do |word|
             if word.include?(dic_word)
