@@ -45,7 +45,10 @@ class GameProcess
 
   def turn
     @square = gets.chomp.downcase
-    if @current_board.board_checker.include? @square
+    if @current_board.board_checker.include? @square.reverse
+      @square = @square.reverse
+    end
+    if @current_board.board_checker.include?(@square)
       check_square
       @current_board.board[@square.intern] = @current_player.symbol.colorize(@current_player.color)
       @current_board.show_board
