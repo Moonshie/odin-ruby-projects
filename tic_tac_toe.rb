@@ -52,6 +52,7 @@ class GameProcess
       check_board_state
     else
       puts 'Incorrect input. Please try again.'
+      turn
     end
     @over ? return : switch_players
 
