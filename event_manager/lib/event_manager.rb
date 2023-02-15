@@ -6,6 +6,14 @@ def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
 end
 
+def clean_pnumber(phone_number)
+  if phone_number.length == 11 && phone_number[0] == '1'
+    phone_number.slice(1..)
+  elsif phone_number.length > 10 || phone_number.length < 10
+    ' '
+  end
+end
+
 def legislators_by_zipcode(zip)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
   civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
@@ -41,9 +49,22 @@ def form_thank_you_letters(contents)
   end
 end
 
+def form_phone_numbers_list(contents)
+  Dir.mkdir('output') unless Dir.exist?('output')
+  File.open('output/phone_numbers.txt', 'w') do |f|
+    contents.each do |row|
+      name = row[:first_name]
+      phone_number = row[:homephone].tr('^0-9', '')
+      phone_number = clean_pnumber(phone_number) if phone_number.length != 10
+      f.puts("#{name} - #{phone_number}")
+    end
+  end
+end
+
 def list_functions
   puts 'What would you like to do?'
   puts '1. Form "Thank You" letters'
+  puts '2. Form Phone Numbers list'
 end
 
 def function_select(contents)
@@ -53,6 +74,10 @@ def function_select(contents)
   when '1'
     puts 'Forming "Thank You" letters now.'
     form_thank_you_letters(contents)
+    puts 'All done!'
+  when '2'
+    puts 'Forming Phone Numbers list now.'
+    form_phone_numbers_list(contents)
     puts 'All done!'
   else
     puts 'Error: incorrect input. Input the number of needed function.'
@@ -69,3 +94,4 @@ contents = CSV.open(
 )
 
 function_select(contents)
+
