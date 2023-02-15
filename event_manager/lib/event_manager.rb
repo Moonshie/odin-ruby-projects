@@ -2,8 +2,6 @@ require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
 
-
-
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
 end
@@ -43,6 +41,25 @@ def form_thank_you_letters(contents)
   end
 end
 
+def list_functions
+  puts 'What would you like to do?'
+  puts '1. Form "Thank You" letters'
+end
+
+def function_select(contents)
+  list_functions
+  function = gets.chomp
+  case function
+  when '1'
+    puts 'Forming "Thank You" letters now.'
+    form_thank_you_letters(contents)
+    puts 'All done!'
+  else
+    puts 'Error: incorrect input. Input the number of needed function.'
+    function_select(contents)
+  end
+end
+
 puts 'Event Manager Initialized!'
 
 contents = CSV.open(
@@ -51,4 +68,4 @@ contents = CSV.open(
   header_converters: :symbol
 )
 
-form_thank_you_letters(contents)
+function_select(contents)
