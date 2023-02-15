@@ -30,7 +30,7 @@ end
 
 def save_thank_you_letter(id, form_letter)
   Dir.mkdir('output') unless Dir.exist?('output')
-  filename = "output/thanks_#{id}.html"
+  filename = "output/letters/thanks_#{id}.html"
   File.open(filename, 'w') do |file|
     file.puts form_letter
   end
@@ -74,11 +74,11 @@ def function_select(contents)
   when '1'
     puts 'Forming "Thank You" letters now.'
     form_thank_you_letters(contents)
-    puts 'All done!'
+    puts 'All done! You can find them in ./output/letters/'
   when '2'
     puts 'Forming Phone Numbers list now.'
     form_phone_numbers_list(contents)
-    puts 'All done!'
+    puts 'All done! You can find it in ./output/'
   else
     puts 'Error: incorrect input. Input the number of needed function.'
     function_select(contents)
