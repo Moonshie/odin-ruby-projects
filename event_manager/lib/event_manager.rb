@@ -68,10 +68,52 @@ def find_peak_hours(contents)
     hours << row[:regdate].slice(-5..-4)
   end
   top_3_hours = hours.tally.sort_by(&:last).reverse[0..2]
-  puts 'Top 3 hours of registration:'
+  puts 'Top 3 hours by registrations:'
   puts "#{top_3_hours[0][0]}:00 (#{top_3_hours[0][1]} people registered)"
   puts "#{top_3_hours[1][0]}:00 (#{top_3_hours[1][1]} people registered)"
   puts "#{top_3_hours[2][0]}:00 (#{top_3_hours[2][1]} people registered)"
+end
+
+def find_peak_days(contents)
+  days = []
+  contents.each do |row|
+    date = row[:regdate].split(/ /, 2).first
+    days << Date.strptime(date, '%m/%d/%y')
+  end
+  days_of_week = []
+  days.each do |day|
+    days_of_week << day.wday
+  end
+  days_of_week = days_of_week.tally.sort_by(&:last).reverse
+  show_peak_days(days_of_week)
+end
+
+def show_peak_days(days_of_week)
+  puts 'Days of the week by registrations:'
+  days_of_week.each do |day|
+    puts "#{proper_day_names(day[0])} (#{day[1]} registrations)"
+  end
+end
+
+def proper_day_names(day)
+  case day
+  when 0
+    'Sunday'
+  when 1
+    'Monday'
+  when 2
+    'Tuesday'
+  when 3
+    'Wednesday'
+  when 4
+    'Thursday'
+  when 5
+    'Friday'
+  when 6
+    'Saturday'
+  else
+    'ERROR!'
+  end
 end
 
 def list_functions
@@ -79,6 +121,7 @@ def list_functions
   puts '1. Form "Thank You" letters'
   puts '2. Form Phone Numbers list'
   puts '3. Find peak registration hours'
+  puts '4. Find peak registration days'
 end
 
 def function_select(contents)
@@ -96,6 +139,10 @@ def function_select(contents)
   when '3'
     puts 'Finding peak registration hours now.'
     find_peak_hours(contents)
+    puts 'All done!'
+  when '4'
+    puts 'Finding peak registration days now.'
+    find_peak_days(contents)
     puts 'All done!'
   else
     puts 'Error: incorrect input. Input the number of needed function.'
