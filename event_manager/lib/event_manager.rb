@@ -62,10 +62,23 @@ def form_phone_numbers_list(contents)
   end
 end
 
+def find_peak_hours(contents)
+  hours = []
+  contents.each do |row|
+    hours << row[:regdate].slice(-5..-4)
+  end
+  top_3_hours = hours.tally.sort_by(&:last).reverse[0..2]
+  puts 'Top 3 hours of registration:'
+  puts "#{top_3_hours[0][0]}:00 (#{top_3_hours[0][1]} people registered)"
+  puts "#{top_3_hours[1][0]}:00 (#{top_3_hours[1][1]} people registered)"
+  puts "#{top_3_hours[2][0]}:00 (#{top_3_hours[2][1]} people registered)"
+end
+
 def list_functions
   puts 'What would you like to do?'
   puts '1. Form "Thank You" letters'
   puts '2. Form Phone Numbers list'
+  puts '3. Find peak registration hours'
 end
 
 def function_select(contents)
@@ -80,6 +93,10 @@ def function_select(contents)
     puts 'Forming Phone Numbers list now.'
     form_phone_numbers_list(contents)
     puts 'All done! You can find it in ./output/'
+  when '3'
+    puts 'Finding peak registration hours now.'
+    find_peak_hours(contents)
+    puts 'All done!'
   else
     puts 'Error: incorrect input. Input the number of needed function.'
     function_select(contents)
@@ -89,10 +106,9 @@ end
 puts 'Event Manager Initialized!'
 
 contents = CSV.open(
-  'event_attendees.csv',
+  'event_attendees_full.csv',
   headers: true,
   header_converters: :symbol
 )
 
 function_select(contents)
-
