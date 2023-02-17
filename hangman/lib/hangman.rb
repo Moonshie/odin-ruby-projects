@@ -1,6 +1,7 @@
+require 'json'
+
 class Game
-  attr_reader :word, :split_word
-  attr_accessor :guess_count, :open_letters, :absent_letters
+  attr_accessor :guess_count, :open_letters, :absent_letters, :word, :split_word
 
   def initialize(dictionary)
     @word = word_choice(dictionary)
@@ -45,11 +46,14 @@ class Game
   end
 
   def valid_input?(input)
-    if input == @word
+    case input
+    when input == @word
       game_end('win')
-    elsif input.length != 1 || !input.match(/^[a-zA-Z]+/)
+    when input == '-save'
+      true
+    when input.length != 1 || !input.match(/^[a-zA-Z]+/)
       false
-    elsif @open_letters.include?(input) || @absent_letters.include?(input)
+    when @open_letters.include?(input) || @absent_letters.include?(input)
       false
     else
       true
@@ -57,23 +61,45 @@ class Game
   end
 
   def check_input(input)
-    if @split_word.include?(input)
+    if input == '-save'
+      puts 'Game saved. Thanks for playing!'
+      save_game
+    elsif @split_word.include?(input)
       puts 'Correct!'
       reveal_letters(input)
+      info
     else
       puts 'Incorrect!'
       @guess_count -= 1
       @absent_letters << input
+      info
     end
-    info
   end
 
   def reveal_letters(input)
     @split_word.each_with_index do |letter, index|
-      if letter == input
-        @open_letters[index] = input
-      end
+      @open_letters[index] = input if letter == input
     end
+  end
+
+  def save_game
+    save = JSON.dump(
+      'guess_count' => @guess_count,
+      'open_letters' => @open_letters,
+      'absent_letters' => @absent_letters,
+      'word' => @word,
+      'split_word' => @split_word
+    )
+    File.write('save.json', save)
+  end
+
+  def load_game
+    file = JSON.parse(File.read('save.json'))
+    @guess_count = file['guess_count']
+    @open_letters = file['open_letters']
+    @absent_letters = file['absent_letters']
+    @word = file['word']
+    @split_word = file['split_word']
   end
 
   def game_end(result)
@@ -88,7 +114,27 @@ class Game
   end
 end
 
+def launch_game(game)
+  choice = gets.chomp
+  if choice == '-new'
+    true
+  elsif choice == '-load'
+    if File.exist?('save.json')
+      game.load_game
+    else
+      puts 'No saved game found, please try again.'
+      launch_game(game)
+    end
+  else
+    puts 'Incorrect input, please try again.'
+    launch_game(game)
+  end
+end
+
 puts 'Hangman initialized!'
+puts 'To start a new game, type -new'
+puts 'To load your game state, type -load'
 dictionary = 'google-10000-english-no-swears.txt'
 game = Game.new(dictionary)
+launch_game(game)
 game.info
