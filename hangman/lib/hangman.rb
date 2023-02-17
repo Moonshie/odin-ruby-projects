@@ -1,13 +1,3 @@
-def word_choice(dictionary)
-  dict = File.open(dictionary)
-  dict_l = dict.readlines.length
-  dict.rewind
-  word = dict.readlines[rand(0...dict_l)].chomp
-  return word unless word.length < 5 || word.length > 12
-
-  word_choice(dictionary)
-end
-
 class Game
   attr_reader :word, :split_word
   attr_accessor :guess_count, :open_letters, :absent_letters
@@ -18,6 +8,16 @@ class Game
     @guess_count = 8
     @open_letters = Array.new(@word.length, '_')
     @absent_letters = []
+  end
+
+  def word_choice(dictionary)
+    dict = File.open(dictionary)
+    dict_l = dict.readlines.length
+    dict.rewind
+    word = dict.readlines[rand(0...dict_l)].chomp
+    return word unless word.length < 5 || word.length > 12
+
+    word_choice(dictionary)
   end
 
   def info
