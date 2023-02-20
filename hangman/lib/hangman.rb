@@ -47,15 +47,15 @@ class Game
   end
 
   def valid_input?(input)
-    case input
+    case 
     when input == @word
       game_end('win')
     when input == '-save'
       true
     when input.length != 1 || !input.match(/^[a-zA-Z]+/)
-      false
+      return false
     when @open_letters.include?(input) || @absent_letters.include?(input)
-      false
+      return false
     else
       true
     end
@@ -63,7 +63,7 @@ class Game
 
   def check_input(input)
     if input == '-save'
-      puts 'Game saved. Thanks for playing!'
+      puts 'Game saved. Thanks for playing!'.colorize(:blue)
       save_game
     elsif @split_word.include?(input)
       puts 'Correct!'.colorize(:green)
@@ -130,6 +130,7 @@ def launch_game(game)
     puts 'Incorrect input, please try again.'.colorize(:red)
     launch_game(game)
   end
+  puts 'To save the game in progress, type - save.'.colorize(:blue)
 end
 
 puts 'Hangman initialized!'
