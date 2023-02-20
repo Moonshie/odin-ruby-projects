@@ -1,4 +1,5 @@
 require 'json'
+require 'colorize'
 
 class Game
   attr_accessor :guess_count, :open_letters, :absent_letters, :word, :split_word
@@ -22,16 +23,16 @@ class Game
   end
 
   def info
-    return game_end('lose') if guess_count.zero?
-    return game_end('win') if @open_letters == @split_word
-
     puts ''
-    print "Guessed letters: #{@open_letters.join(' ')}"
+    print "Guessed letters: #{@open_letters.join(' ').colorize(:green)}"
     puts ''
-    puts "Absent letters: #{@absent_letters.join(' ')}"
+    puts "Absent letters: #{@absent_letters.join(' ').colorize(:red)}"
     puts "Guesses remaining: #{@guess_count}"
     puts ''
     puts 'Guess a letter!'
+    return game_end('lose') if guess_count.zero?
+    return game_end('win') if @open_letters == @split_word
+
     turn
   end
 
@@ -40,7 +41,7 @@ class Game
     if valid_input?(input)
       check_input(input)
     else
-      puts 'Incorrect input. Try again.'
+      puts 'Incorrect input. Try again.'.colorize(:red)
       turn
     end
   end
@@ -65,11 +66,11 @@ class Game
       puts 'Game saved. Thanks for playing!'
       save_game
     elsif @split_word.include?(input)
-      puts 'Correct!'
+      puts 'Correct!'.colorize(:green)
       reveal_letters(input)
       info
     else
-      puts 'Incorrect!'
+      puts 'Incorrect!'.colorize(:red)
       @guess_count -= 1
       @absent_letters << input
       info
@@ -106,11 +107,11 @@ class Game
     puts ''
     case result
     when 'win'
-      puts 'Congratulations! You won!'
+      puts 'Congratulations! You won!'.colorize(:green)
     when 'lose'
-      puts 'Too bad. You lost!'
+      puts 'Too bad. You lost!'.colorize(:red)
     end
-    puts "The word was: #{@word}"
+    puts "The word was: #{@word.colorize(:color => :blue, :mode => :bold)}"
   end
 end
 
@@ -122,11 +123,11 @@ def launch_game(game)
     if File.exist?('save.json')
       game.load_game
     else
-      puts 'No saved game found, please try again.'
+      puts 'No saved game found, please try again.'.colorize(:red)
       launch_game(game)
     end
   else
-    puts 'Incorrect input, please try again.'
+    puts 'Incorrect input, please try again.'.colorize(:red)
     launch_game(game)
   end
 end
